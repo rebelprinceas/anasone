@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trends Teller Ultimate</title>
+    <title>Trends Teller Safe Zone</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;900&family=JetBrains+Mono&display=swap');
 
@@ -40,97 +40,76 @@
         #frame { 
             height: 100%; display: flex; flex-direction: column; background: #000; position: relative;
         }
-        /* The Tech Mesh Overlay */
+        /* Tech Mesh Overlay */
         #frame::before {
             content: ''; position: absolute; inset: 0;
             background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-            background-size: 30px 30px; /* मेश का घनत्व */
-            pointer-events: none; z-index: 0;
+            background-size: 30px 30px; pointer-events: none; z-index: 0;
         }
 
+        /* Player Sections with adjusted Flex */
         .player-card {
-            flex: 1; display: flex; flex-direction: column;
+            flex: 1.2; display: flex; flex-direction: column;
             justify-content: center; align-items: center; 
-            position: relative; padding: 10px; z-index: 2; /* मेश के ऊपर */
+            position: relative; padding: 10px; z-index: 2;
         }
 
-        /* ✨ LIGHT SWEEP ANIMATION KEYFRAMES */
+        /* ✨ LIGHT SWEEP ANIMATION */
         @keyframes borderSweep {
             0% { background-position: 0% center; }
             100% { background-position: 200% center; }
         }
 
-        /* 💊 STYLISH NAME PILL WITH SWEEP */
         .name-pill {
-            /* border-color को transparent करें ताकि ग्रेडिएंट दिखे */
-            border: 3px solid transparent; 
-            border-radius: 50px;
-            /* डबल बैकग्राउंड: पहला अंदर का रंग, दूसरा बॉर्डर का ग्रेडिएंट */
-            background: 
-                linear-gradient(var(--dark-grey), var(--dark-grey)) padding-box, /* Inner BG */
-                linear-gradient(90deg, var(--silver) 20%, var(--gold) 50%, var(--silver) 80%) border-box; /* Sweep Gradient */
-            background-size: 200% auto;
-            animation: borderSweep 3s linear infinite;
-
-            color: var(--gold); padding: 8px 30px;
-            font-family: 'Syncopate', sans-serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+            border: 3px solid transparent; border-radius: 50px;
+            background: linear-gradient(var(--dark-grey), var(--dark-grey)) padding-box, linear-gradient(90deg, var(--silver) 20%, var(--gold) 50%, var(--silver) 80%) border-box;
+            background-size: 200% auto; animation: borderSweep 3s linear infinite;
+            color: var(--gold); padding: 8px 30px; font-family: 'Syncopate', sans-serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 15;
         }
 
-        /* 🖼 PHOTO BOX WITH SWEEP */
         .photo-box {
-            width: 280px; height: 280px; border-radius: 50%;
-            border: 5px solid transparent; /* Transparent for gradient */
-            background: 
-                linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)) padding-box,
-                linear-gradient(90deg, var(--silver) 20%, var(--gold) 50%, var(--silver) 80%) border-box;
-            background-size: 200% auto;
-            animation: borderSweep 4s linear infinite reverse; /* उल्टी दिशा में घुमाव */
-
+            width: 280px; height: 280px; border-radius: 50%; border: 5px solid transparent;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)) padding-box, linear-gradient(90deg, var(--silver) 20%, var(--gold) 50%, var(--silver) 80%) border-box;
+            background-size: 200% auto; animation: borderSweep 4s linear infinite reverse;
             padding: 5px; position: relative; transition: all 0.4s ease; margin: 15px 0;
         }
         .photo-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
         .value-pill {
             position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
-            background: #fff; color: #000; padding: 8px 40px;
-            border-radius: 6px; font-size: 60px; font-weight: 900;
+            background: #fff; color: #000; padding: 8px 40px; border-radius: 6px; font-size: 60px; font-weight: 900;
             box-shadow: 0 10px 40px rgba(0,0,0,0.9); min-width: 200px; text-align: center;
         }
 
-        /* 📊 MIDDLE HUB & TYPEWRITER FONT */
+        /* 📊 MIDDLE HUB */
         #middle-hub {
-            height: 180px; background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
+            height: 160px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;
         }
 
-        /* टाइपराइटर इफेक्ट के लिए मोनोस्पेस फॉन्ट अच्छा लगता है */
         .typewriter-text { font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; border-right: 2px solid transparent; }
-        /* टाइपिंग के दौरान कर्सर ब्लिंक करे */
         .typing-active { border-right-color: var(--gold); animation: blinkCursor 0.5s step-end infinite alternate; }
         @keyframes blinkCursor { 50% { border-color: transparent; } }
 
-        #ui-format { font-size: 14px; color: #aaa; letter-spacing: 3px; margin-bottom: 8px; text-transform: uppercase; min-height: 20px; }
-        #ui-stat { font-size: 38px; color: var(--gold); font-weight: 900; margin-bottom: 10px; text-transform: uppercase; min-height: 50px; }
+        #ui-format { font-size: 12px; color: #aaa; letter-spacing: 3px; margin-bottom: 5px; text-transform: uppercase; min-height: 20px; }
+        #ui-stat { font-size: 34px; color: var(--gold); font-weight: 900; margin-bottom: 8px; text-transform: uppercase; min-height: 40px; }
 
         .score-row { display: flex; align-items: center; gap: 20px; }
-        .score-num { font-size: 45px; font-weight: 900; color: #fff; }
-        .vs-circle { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #777; font-weight: bold; }
+        .score-num { font-size: 40px; font-weight: 900; color: #fff; }
+        .vs-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #777; font-weight: bold; }
 
-        /* Winner Effects */
-        @keyframes intensePulse {
-            0% { box-shadow: 0 0 20px var(--winner-color); }
-            50% { box-shadow: 0 0 100px var(--winner-color); }
-            100% { box-shadow: 0 0 20px var(--winner-color); }
+        /* 🛡️ SAFE ZONE SPACER */
+        #safe-zone {
+            height: 18vh; /* 18% space for YouTube UI elements */
+            width: 100%;
+            background: transparent;
+            z-index: 1;
         }
-        /* जब जीतें, तो स्वीप एनीमेशन रोक कर हरा ग्लो दिखाएं */
-        .winner-active { 
-            animation: intensePulse 1.5s infinite ease-in-out !important; 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)) padding-box, linear-gradient(var(--winner-color), var(--winner-color)) border-box !important;
-            border-color: transparent !important;
-        }
+
+        @keyframes intensePulse { 0%, 100% { box-shadow: 0 0 20px var(--winner-color); } 50% { box-shadow: 0 0 100px var(--winner-color); } }
+        .winner-active { animation: intensePulse 1.5s infinite ease-in-out !important; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)) padding-box, linear-gradient(var(--winner-color), var(--winner-color)) border-box !important; border-color: transparent !important; }
         .winner-static-text { color: var(--winner-color) !important; }
         
         #timer-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: none; align-items: center; justify-content: center; font-size: 150px; font-weight: 900; color: var(--gold); }
@@ -139,7 +118,7 @@
 <body>
 
     <div id="setup">
-        <h2 style="text-align:center; color:var(--gold); font-family:'Syncopate'">TRENDS TELLER ULTIMATE</h2>
+        <h2 style="text-align:center; color:var(--gold); font-family:'Syncopate'">TRENDS TELLER PRO</h2>
         <div class="input-group">
             <label style="font-size:12px; color:var(--gold)">CUSTOM BACKGROUND GRADIENT</label>
             <div class="color-picker-row">
@@ -157,15 +136,12 @@
             <input type="text" id="p2Name" placeholder="Name">
             <input type="file" id="p2Img">
         </div>
-        <div class="input-group">
-            <label>STATS DATA</label>
-            <div id="stats-list">
-                <div class="row" style="display:flex; gap:5px; margin-bottom:5px">
-                    <input type="text" placeholder="Format" style="width:25%"><input type="text" placeholder="Stat" style="width:35%"><input type="number" placeholder="P1" style="width:20%"><input type="number" placeholder="P2" style="width:20%">
-                </div>
+        <div id="stats-list" class="input-group">
+            <div class="row" style="display:flex; gap:5px; margin-bottom:5px">
+                <input type="text" placeholder="Format" style="width:25%"><input type="text" placeholder="Stat" style="width:35%"><input type="number" placeholder="P1" style="width:20%"><input type="number" placeholder="P2" style="width:20%">
             </div>
-            <button onclick="addRow()" style="width:100%; padding:10px; background:#222; color:#888; border:none; border-radius:5px">+ ADD ROW</button>
         </div>
+        <button onclick="addRow()" style="width:100%; padding:10px; background:#222; color:#888; border:none; border-radius:5px; margin-bottom:10px">+ ADD ROW</button>
         <button class="start-btn" onclick="startEliteRender()">🎬 START RECORDING</button>
     </div>
 
@@ -192,6 +168,8 @@
                 <div class="name-pill" id="n2">P2</div>
                 <div id="box2" class="photo-box"><img id="vImg2"><div id="val2" class="value-pill">0</div></div>
             </div>
+
+            <div id="safe-zone"></div>
         </div>
     </div>
 
@@ -203,11 +181,10 @@
             document.getElementById('stats-list').appendChild(div);
         }
 
-        // ✨ Typewriter Effect Function
         function typeWriter(elementId, text, speed = 50) {
             const element = document.getElementById(elementId);
-            element.innerHTML = ""; // पुराना टेक्स्ट साफ़ करें
-            element.classList.add('typing-active'); // कर्सर चालू करें
+            element.innerHTML = "";
+            element.classList.add('typing-active');
             let i = 0;
             function typing() {
                 if (i < text.length) {
@@ -215,7 +192,7 @@
                     i++;
                     setTimeout(typing, speed);
                 } else {
-                    element.classList.remove('typing-active'); // कर्सर बंद करें
+                    element.classList.remove('typing-active');
                 }
             }
             typing();
@@ -243,10 +220,8 @@
         async function animate(stats) {
             let sc1 = 0, sc2 = 0;
             for (let item of stats) {
-                // ✨ टाइपराइटर फंक्शन को कॉल करें
                 typeWriter('ui-format', item.f.toUpperCase(), 40);
                 typeWriter('ui-stat', item.l.toUpperCase(), 40);
-                
                 reset();
                 await Promise.all([count('val1', item.v1), count('val2', item.v2)]);
                 await new Promise(r => setTimeout(r, 800));
@@ -255,7 +230,7 @@
                 document.getElementById('s1').innerText = sc1; document.getElementById('s2').innerText = sc2;
                 await new Promise(r => setTimeout(r, 2200));
             }
-            alert("Done!");
+            alert("Record Finished!");
         }
 
         function count(id, end) {
