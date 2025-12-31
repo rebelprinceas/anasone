@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trends Teller - Refined Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@400;900&display=swap');
+
+        :root {
+            --winner-color: #00ff41; 
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --dark-grey: #222222;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #000; color: white; font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 🛠 SETUP SCREEN */
+        #setup { padding: 25px; overflow-y: auto; height: 100vh; background: #0a0a0a; display: block; }
+        .input-group { background: #151515; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #222; }
+        input[type="text"], input[type="number"], input[type="file"] { 
+            width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; 
+            border: 1px solid #333; background: #000; color: white;
+        }
+        .color-picker-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        input[type="color"] { width: 50px; height: 50px; border: none; background: none; cursor: pointer; }
+
+        .start-btn { 
+            background: var(--gold); color: black; width: 100%; padding: 18px; 
+            font-size: 18px; font-weight: 900; border-radius: 10px; border: none; margin-top: 10px;
+        }
+
+        /* 🎥 RENDER SCREEN */
+        #render-screen { display: none; width: 100vw; height: 100vh; position: relative; }
+        #frame { height: 100%; display: flex; flex-direction: column; background: #000; }
+
+        .player-card {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; 
+            position: relative; padding: 10px;
+        }
+
+        /* 💊 STYLISH NAME PILL */
+        .name-pill {
+            background: var(--dark-grey);
+            color: var(--gold);
+            border: 2px solid var(--silver);
+            padding: 8px 30px;
+            border-radius: 50px;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 15;
+        }
+
+        .photo-box {
+            width: 280px; height: 280px; border-radius: 50%;
+            padding: 5px; border: 4px solid rgba(255,255,255,0.1);
+            position: relative; transition: all 0.4s ease;
+            background: rgba(0,0,0,0.5);
+            margin: 15px 0; /* Space for name pills */
+        }
+        .photo-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        .value-pill {
+            position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
+            background: #fff; color: #000; padding: 8px 40px;
+            border-radius: 6px; font-size: 60px; font-weight: 900;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            min-width: 200px; text-align: center;
+        }
+
+        /* 📊 MIDDLE HUB */
+        #middle-hub {
+            height: 180px; background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+
+        #ui-format { font-size: 12px; color: #888; letter-spacing: 4px; margin-bottom: 5px; font-family: 'Syncopate'; }
+        #ui-stat { font-size: 36px; color: var(--gold); font-weight: 900; margin-bottom: 8px; text-transform: uppercase; }
+
+        .score-row { display: flex; align-items: center; gap: 20px; }
+        .score-num { font-size: 45px; font-weight: 900; color: #fff; }
+        .vs-circle { 
+            width: 35px; height: 35px; border-radius: 50%; border: 1px solid #444;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: #777; font-weight: bold;
+        }
+
+        /* ✨ INTENSE PULSATING GLOW (Photo Only) */
+        @keyframes intensePulse {
+            0% { box-shadow: 0 0 20px var(--winner-color); border-color: var(--winner-color); transform: scale(1); }
+            50% { box-shadow: 0 0 80px var(--winner-color), 0 0 120px var(--winner-color); border-color: #fff; transform: scale(1.05); }
+            100% { box-shadow: 0 0 20px var(--winner-color); border-color: var(--winner-color); transform: scale(1); }
+        }
+
+        .winner-active { animation: intensePulse 1.5s infinite ease-in-out; z-index: 20; }
+        /* NO GLOW FOR TEXT AS REQUESTED */
+        .winner-static-text { color: var(--winner-color) !important; }
+        
+        #timer-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 100;
+            display: none; align-items: center; justify-content: center;
+            font-size: 150px; font-weight: 900; color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setup">
+        <h2 style="text-align:center; color:var(--gold); font-family:'Syncopate'">TRENDS TELLER</h2>
+        
+        <div class="input-group">
+            <label style="font-size:12px; color:var(--gold)">CUSTOM BACKGROUND GRADIENT</label>
+            <div class="color-picker-row">
+                <input type="color" id="bgColor1" value="#1e1e1e">
+                <input type="color" id="bgColor2" value="#000000">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>TOP PLAYER (P1)</label>
+            <input type="text" id="p1Name" placeholder="Name">
+            <input type="file" id="p1Img">
+        </div>
+
+        <div class="input-group">
+            <label>BOTTOM PLAYER (P2)</label>
+            <input type="text" id="p2Name" placeholder="Name">
+            <input type="file" id="p2Img">
+        </div>
+
+        <div class="input-group">
+            <label>STATS DATA</label>
+            <div id="stats-list">
+                <div class="row" style="display:flex; gap:5px; margin-bottom:5px">
+                    <input type="text" placeholder="Format" style="width:25%">
+                    <input type="text" placeholder="Stat" style="width:35%">
+                    <input type="number" placeholder="P1" style="width:20%">
+                    <input type="number" placeholder="P2" style="width:20%">
+                </div>
+            </div>
+            <button onclick="addRow()" style="width:100%; padding:10px; background:#222; color:#888; border:none; border-radius:5px">+ ADD ROW</button>
+        </div>
+
+        <button class="start-btn" onclick="startEliteRender()">🎬 START RECORDING</button>
+    </div>
+
+    <div id="timer-overlay">5</div>
+
+    <div id="render-screen">
+        <div id="frame">
+            <div class="player-card">
+                <div id="box1" class="photo-box">
+                    <img id="vImg1">
+                    <div id="val1" class="value-pill">0</div>
+                </div>
+                <div class="name-pill" id="n1">PLAYER 1</div>
+            </div>
+
+            <div id="middle-hub">
+                <div id="ui-format">FORMAT</div>
+                <div id="ui-stat">READY</div>
+                <div class="score-row">
+                    <div id="s1" class="score-num">0</div>
+                    <div class="vs-circle">VS</div>
+                    <div id="s2" class="score-num">0</div>
+                </div>
+            </div>
+
+            <div class="player-card">
+                <div class="name-pill" id="n2">PLAYER 2</div>
+                <div id="box2" class="photo-box">
+                    <img id="vImg2">
+                    <div id="val2" class="value-pill">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addRow() {
+            const div = document.createElement('div');
+            div.className = 'row';
+            div.style = "display:flex; gap:5px; margin-bottom:5px";
+            div.innerHTML = `<input type="text" placeholder="Format" style="width:25%"><input type="text" placeholder="Stat" style="width:35%"><input type="number" placeholder="P1" style="width:20%"><input type="number" placeholder="P2" style="width:20%">`;
+            document.getElementById('stats-list').appendChild(div);
+        }
+
+        async function startEliteRender() {
+            if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+
+            const c1 = document.getElementById('bgColor1').value;
+            const c2 = document.getElementById('bgColor2').value;
+            document.getElementById('frame').style.background = `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`;
+
+            document.getElementById('n1').innerText = document.getElementById('p1Name').value;
+            document.getElementById('n2').innerText = document.getElementById('p2Name').value;
+            
+            const f1 = document.getElementById('p1Img').files[0];
+            const f2 = document.getElementById('p2Img').files[0];
+            if(f1) document.getElementById('vImg1').src = URL.createObjectURL(f1);
+            if(f2) document.getElementById('vImg2').src = URL.createObjectURL(f2);
+
+            const rows = document.querySelectorAll('.row');
+            let stats = [];
+            rows.forEach(r => {
+                const ins = r.querySelectorAll('input');
+                if(ins[1].value) stats.push({ f: ins[0].value, l: ins[1].value, v1: +ins[2].value, v2: +ins[3].value });
+            });
+
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('render-screen').style.display = 'block';
+
+            const timer = document.getElementById('timer-overlay');
+            timer.style.display = 'flex';
+            for(let i=5; i>0; i--) { timer.innerText = i; await new Promise(r => setTimeout(r, 1000)); }
+            timer.style.display = 'none';
+
+            animate(stats);
+        }
+
+        async function animate(stats) {
+            let sc1 = 0, sc2 = 0;
+            for (let item of stats) {
+                document.getElementById('ui-format').innerText = item.f.toUpperCase();
+                document.getElementById('ui-stat').innerText = item.l.toUpperCase();
+                reset();
+                
+                await Promise.all([count('val1', item.v1), count('val2', item.v2)]);
+                await new Promise(r => setTimeout(r, 800));
+
+                if(item.v1 > item.v2) { sc1++; win(1); }
+                else if(item.v2 > item.v1) { sc2++; win(2); }
+
+                document.getElementById('s1').innerText = sc1;
+                document.getElementById('s2').innerText = sc2;
+                await new Promise(r => setTimeout(r, 2200));
+            }
+            alert("Done!");
+        }
+
+        function count(id, end) {
+            return new Promise(res => {
+                let obj = document.getElementById(id);
+                let dur = 1200, start = null;
+                function step(ts) {
+                    if(!start) start = ts;
+                    let prog = Math.min((ts - start) / dur, 1);
+                    obj.innerText = Math.floor(prog * end);
+                    if(prog < 1) requestAnimationFrame(step); else res();
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        function win(n) {
+            document.getElementById('box'+n).classList.add('winner-active');
+            document.getElementById('val'+n).classList.add('winner-static-text');
+        }
+
+        function reset() {
+            document.querySelectorAll('.photo-box').forEach(e => e.classList.remove('winner-active'));
+            document.querySelectorAll('.value-pill').forEach(e => e.classList.remove('winner-static-text'));
+        }
+    </script>
+</body>
+</html>
